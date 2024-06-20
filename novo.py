@@ -11,13 +11,13 @@ planilha = workbook.active
 dadospestado = dados.groupby('state')
 
 #cria uma nova aba no ecxel
-nsheet = workbook.create_sheet("Cidades - RS")
+Nova_sheet = workbook.create_sheet("Cidades - RS")
 
 #pega a coluna monthly_income e "salva" em salario
 salario = 'monthly_income'
 #pega a coluna state e "salva" em estados
 estados = dados['state']
-
+cidades_rs = dados[dados["state"] == "RS"]
 
 
 #separa os estados do sudeste
@@ -38,8 +38,9 @@ est.value = "Estados"
 med.value = "Média"
 
 
-#organiza as medias e os estados em linha por linha e coluna por coluna( apenas os estados do Sudeste)
 
+
+#organiza as medias e os estados em linha por linha e coluna por coluna( apenas os estados do Sudeste)
 for estado, mediasalario in salariopestado.items():
     planilha.cell(row = numero_coluna, column = 4).value = estado
     planilha.cell(row = numero_coluna, column = 5).value = mediasalario
@@ -70,6 +71,8 @@ maior.value = "Maior"
 menor.value = "Menor"
 
 numero_coluna = 2
+
+
 #organiza os maiores salarios por estado
 for estado, maioestado in maiorpestado.items():
     planilha.cell(row = numero_coluna, column=7).value = estado
@@ -80,6 +83,7 @@ for estado, maioestado in maiorpestado.items():
 est = planilha.cell(row=1,column=10)
 est.value = "Estados"
 numero_coluna = 2
+
 #organiza os menores salarios por estado
 for estado, menorestado in menorpestado.items():
     planilha.cell(row= numero_coluna, column=10).value = estado
@@ -98,8 +102,6 @@ planilha ['N2'].value = pformat
 #combina os" dados da planilha clientes com a planilha auto 
 #utiliza o "how='left'" para garantir que todas as informaçoes dos clientes sejam mantidas, mesmo aqueles que não possuem carro
 dadoscombinados = dados.merge(dados1, how='left', on='id_cliente')
-
-
 
 
 
@@ -125,45 +127,23 @@ qts.value = mcontagem
 
 
 
-#procurar clientes pertencentes a cidades do estado do RS
-# estadosrs = dados.query("state == 'RS' ")
+Cidades_rs_unicas = cidades_rs.drop_duplicates(subset="city")
 
-#limpar todas as cidades duplicadas que provavelmente vão existir e contar elas
-
-# cunicas = estadosrs.drop_duplicates(subset='city')
-# ncidades = cunicas.shape[0]
+N_cidades_rs = len(Cidades_rs_unicas)
 
 
+Num_cidades = Nova_sheet.cell(row = 1, column = 1)
+Num_cidades.value = "Qtd de Cidades"
 
-# ccoluna = 4
-# scoluna = 5
-# filtro_cidades = "RS"
-
-# stategup = {}
-
-# for row in planilha.iter_rows(min_row = 2):
-#     cnome = row[ccoluna - 1].value
-#     snome = row[scoluna - 1].value
+Qtd_cidades = Nova_sheet.cell(row = 2, column = 1)
+Qtd_cidades.value = N_cidades_rs
 
 
-#     if snome == filtro_cidades:
-#         if snome not in stategup:
-#             stategup[snome] = []
-#         stategup[snome].append(cnome)
+City_rs = Nova_sheet.cell(row =1, column = 4)
+City_rs.value = "Cidades do RS"
 
-
-
-# for snome, cities in stategup.items():
-#     print(f"\nCidades do estado {snome}:")
-
-#     for ctt in sorted(set(cities)):
-#         print(ctt)
-
-
-
-
-
-# print(rsestado)
+for i, cidade in enumerate(cidades_rs["city"], start=2):
+    Nova_sheet.cell(row=i, column=4).value = cidade
 
 
 
@@ -171,21 +151,8 @@ qts.value = mcontagem
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+#salva os dados na planilha escolhida
 workbook.save('Dadosfinal.xlsx')
-
 
 
 
