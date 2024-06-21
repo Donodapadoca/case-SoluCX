@@ -59,14 +59,6 @@ menorpestado = dadospestado['monthly_income'].min()
 
 
 
-# planilha.cell(row = 1, column = 1).value = "Estado"
-# planilha.cell(row = 1, column = 2).value = "Salario"
-
-
-
-
-
-
 #coloca strings em frente aos dados para melhor entendimento
 est = planilha.cell(row=1,column=7)
 maior = planilha.cell(row=1, column=8)
@@ -107,7 +99,6 @@ planilha ['N2'].value = pformat
 #combina os" dados da planilha clientes com a planilha auto 
 #utiliza o "how='left'" para garantir que todas as informaçoes dos clientes sejam mantidas, mesmo aqueles que não possuem carro
 dadoscombinados = dados.merge(dados1, how='left', on='id_cliente')
-
 
 
 #encontrado os carros com a marca ford
@@ -154,7 +145,7 @@ N_cidades_rs.value = "Cidades RS"
 QT_cidades = Nova_plan.cell(row=2, column=1)
 QT_cidades.value = Qtd_cidades
 
-
+#imprime as cidades na nova aba criada
 for i, cidade in enumerate(Sembranco_cidades["city"], start=2):
     Nova_plan.cell(row=i, column=4).value = cidade
 
