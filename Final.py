@@ -9,21 +9,26 @@ dados1 = pd.read_excel('auto.xlsx',sheet_name='auto')
 workbook = openpyxl.Workbook()
 planilha = workbook.active
 dadospestado = dados.groupby('state')
-
-#cria uma nova aba no ecxel
-Nova_sheet = workbook.create_sheet("Cidades - RS")
+Nova_plan = workbook.create_sheet("Cidades - RS")
 
 #pega a coluna monthly_income e "salva" em salario
 salario = 'monthly_income'
 #pega a coluna state e "salva" em estados
 estados = dados['state']
-cidades_rs = dados[dados["state"] == "RS"]
 
+# removendo os espacos em branco
+dados["city"] = dados["city"].str.strip()
+
+#convertendo todas as cidades para maiusculo para ver se o filtro de drop_duplicates funciona melhor
+dados["city"] = dados["city"].str.upper()
+
+# Filtragem por estado
+Cidades_rs = dados[dados["state"] == "RS"]
 
 #separa os estados do sudeste
 estadossud = ['SP', 'ES', 'MG','RJ']
 
-numero_coluna = 2
+Numero_linha = 2
 
 
 estsud_data = estados[estados.isin(estadossud)]
@@ -42,9 +47,9 @@ med.value = "Média"
 
 #organiza as medias e os estados em linha por linha e coluna por coluna( apenas os estados do Sudeste)
 for estado, mediasalario in salariopestado.items():
-    planilha.cell(row = numero_coluna, column = 4).value = estado
-    planilha.cell(row = numero_coluna, column = 5).value = mediasalario
-    numero_coluna += 2
+    planilha.cell(row = Numero_linha, column = 4).value = estado
+    planilha.cell(row = Numero_linha, column = 5).value = mediasalario
+    Numero_linha += 2
 
 
 
@@ -70,25 +75,25 @@ est.value = "Estados"
 maior.value = "Maior"
 menor.value = "Menor"
 
-numero_coluna = 2
+Numero_linha = 2
 
 
 #organiza os maiores salarios por estado
 for estado, maioestado in maiorpestado.items():
-    planilha.cell(row = numero_coluna, column=7).value = estado
-    planilha.cell(row = numero_coluna, column=8).value = maioestado
-    numero_coluna +=1
+    planilha.cell(row = Numero_linha, column=7).value = estado
+    planilha.cell(row = Numero_linha, column=8).value = maioestado
+    Numero_linha +=1
 
 
 est = planilha.cell(row=1,column=10)
 est.value = "Estados"
-numero_coluna = 2
+Numero_linha = 2
 
 #organiza os menores salarios por estado
 for estado, menorestado in menorpestado.items():
-    planilha.cell(row= numero_coluna, column=10).value = estado
-    planilha.cell(row=numero_coluna, column=11).value = menorestado
-    numero_coluna += 1
+    planilha.cell(row= Numero_linha, column=10).value = estado
+    planilha.cell(row=Numero_linha, column=11).value = menorestado
+    Numero_linha += 1
 
 
 p60mais = (dados['age']>60).mean() * 100
@@ -126,29 +131,35 @@ city.value = cmaiscarros
 qts.value = mcontagem
 
 
+# Filtragem por estado
+Cidades_rs = dados[dados["state"] == "RS"]
 
-Cidades_rs_unicas = cidades_rs.drop_duplicates(subset="city")
+# Remoção das duplicatas
+Cidadesunicas_rs = Cidades_rs.drop_duplicates(subset="city")
 
-N_cidades_rs = len(Cidades_rs_unicas)
+#ignorando as linhas em branco
+Sembranco_cidades = Cidadesunicas_rs.dropna(subset=["city"])
 
+# Contagem de cidades únicas
+Qtd_cidades = len(Sembranco_cidades)
 
-Num_cidades = Nova_sheet.cell(row = 1, column = 1)
-Num_cidades.value = "Qtd de Cidades"
-
-Qtd_cidades = Nova_sheet.cell(row = 2, column = 1)
-Qtd_cidades.value = N_cidades_rs
-
-
-City_rs = Nova_sheet.cell(row =1, column = 4)
-City_rs.value = "Cidades do RS"
-
-for i, cidade in enumerate(cidades_rs["city"], start=2):
-    Nova_sheet.cell(row=i, column=4).value = cidade
+Qtd_rs = Nova_plan.cell(row = 1, column = 1)
+Qtd_rs.value = "Qtd de Cidades"
 
 
+N_cidades_rs = Nova_plan.cell(row = 1, column = 4)
+N_cidades_rs.value = "Cidades RS"
+
+# Escrita na planilha "Cidades - RS"
+QT_cidades = Nova_plan.cell(row=2, column=1)
+QT_cidades.value = Qtd_cidades
 
 
+for i, cidade in enumerate(Sembranco_cidades["city"], start=2):
+    Nova_plan.cell(row=i, column=4).value = cidade
 
+
+print(Qtd_cidades)
 
 
 #salva os dados na planilha escolhida
